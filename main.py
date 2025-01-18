@@ -14,6 +14,8 @@ async def shutdown():
     await db_shutdown()
 
 app.include_router(auth)
+app.include_router(blogroute)
+
 
 @app.get("/")
 def read_root():

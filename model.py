@@ -1,3 +1,5 @@
+from typing import Optional
+from datetime import datetime
 from pydantic import BaseModel
 
 class Token(BaseModel):
@@ -19,5 +21,22 @@ class UserData(BaseModel):
     created_at: str
 
 class UserCreate(UserData):
-    password: str\
+    password: str
+
+
+class BlogPost(BaseModel):
+    title: str
+    content: str
+    tag : str
+    status: Optional[str] = "published"
+
+class BlogData(BaseModel):
+    title: str
+    slug : str
+    content: str
+    tag: str
+    author : str
+    created_at: datetime
+    updated_at: datetime
+    user_id: str
     
