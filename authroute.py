@@ -11,7 +11,6 @@ auth = APIRouter(prefix="/auth",tags=["Authentication"])
 
 @auth.post("/token",response_model=Token)
 async def login_for_access_token(formdata: OAuth2PasswordRequestForm = Depends(),db:AsyncIOMotorDatabase=Depends(get_db)):
-    print(formdata)
     user = await authenticate_user(formdata.username,formdata.password,db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED ,detail="Invalid Credentials")
@@ -30,8 +29,8 @@ async def register_user(user:UserCreate,db:AsyncIOMotorDatabase=Depends(get_db))
 @auth.get("/users/me")
 async def read_users_me(current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
     id = current_user["_id"]
-    blogs = await db["blogs"].find({"user_id":id}).to_list(1000)
-    current_user["blogs"]=blogs
+    blogs = await db["blogs"].find({"user_id":id},{"_id":0,"user_id":0}).to_list()
+    current_user.update({"blogs":blogs})
     current_user.pop("_id")
-    current_user.pop("password")
-    return current_user
+    print(current_user)
+    return {"data":current_user}

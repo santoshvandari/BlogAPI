@@ -17,7 +17,7 @@ async def create_blog(blogdata: BlogPost,db:AsyncIOMotorDatabase=Depends(get_db)
     slug=await slug_genertor(blogdata.title,db)
     data = blogdata.dict()
     data.update({"slug":slug,"author":current_user["full_name"],"user_id":current_user["_id"],"created_at":datetime.now(),"updated_at":datetime.now()})
-    result = await db["blogs"].insert_one(blogdata.dict())
+    result = await db["blogs"].insert_one(data)
     if result:
         return {"status":"Blog Created","blog":blogdata.dict()}
     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Blog Creation Failed")
