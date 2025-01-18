@@ -16,6 +16,7 @@ class UserData(BaseModel):
     fullname : str
     username: str
     email: str
+    created_at: str
 
 class UserCreate(UserData):
     password: str

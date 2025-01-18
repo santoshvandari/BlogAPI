@@ -22,8 +22,8 @@ def get_password_hash(password:str):
 def verify_password(plain_password:str,hashed_password:str):
     return pwd_context.verify(plain_password,hashed_password)
 
-def get_user(username:str,db:AsyncIOMotorDatabase):
-    user = db.users.find_one({"username":username})
+async def get_user(username:str,db:AsyncIOMotorDatabase):
+    user = await db["users"].find_one({"username":username},{"_id":0,"password":0})
     if user:
         return user
     return None
@@ -43,7 +43,7 @@ def create_access_token(data:dict):
     return jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
 
 
-def get_current_user(token:str = Depends(oauth2_scheme)):
+async def get_current_user(token:str = Depends(oauth2_scheme),db:AsyncIOMotorDatabase=Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
@@ -57,7 +57,7 @@ def get_current_user(token:str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(username=token_data.username)
+    user = await get_user(username=token_data.username,db=db)
     if user is None:
         raise credentials_exception
     return user
