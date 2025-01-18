@@ -23,7 +23,7 @@ def verify_password(plain_password:str,hashed_password:str):
     return pwd_context.verify(plain_password,hashed_password)
 
 async def get_user(username:str,db:AsyncIOMotorDatabase):
-    user = await db["users"].find_one({"username":username},{"_id":0,"password":0})
+    user = await db["users"].find_one({"username":username})
     if user:
         return user
     return None

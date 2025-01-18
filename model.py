@@ -19,4 +19,5 @@ class UserData(BaseModel):
     created_at: str
 
 class UserCreate(UserData):
-    password: str
+    password: str\
+    

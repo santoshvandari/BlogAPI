@@ -28,5 +28,10 @@ async def register_user(user:UserCreate,db:AsyncIOMotorDatabase=Depends(get_db))
     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="User Already Exists")
 
 @auth.get("/users/me")
-async def read_users_me(current_user:UserData=Depends(get_current_user)):
+async def read_users_me(current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
+    id = current_user["_id"]
+    blogs = await db["blogs"].find({"user_id":id}).to_list(1000)
+    current_user["blogs"]=blogs
+    current_user.pop("_id")
+    current_user.pop("password")
     return current_user
