@@ -38,4 +38,9 @@ class BlogData(BaseModel):
     created_at: datetime
     updated_at: datetime
     full_name: str
-    
+
+class BlogUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    tag: Optional[str] = None
+    status: Optional[str] = None
