@@ -18,7 +18,6 @@ class UserData(BaseModel):
     fullname : str
     username: str
     email: str
-    created_at: str
 
 class UserCreate(UserData):
     password: str
@@ -38,5 +37,5 @@ class BlogData(BaseModel):
     author : str
     created_at: datetime
     updated_at: datetime
-    user_id: str
+    full_name: str
     

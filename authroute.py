@@ -32,5 +32,4 @@ async def read_users_me(current_user:UserData=Depends(get_current_user),db:Async
     blogs = await db["blogs"].find({"user_id":id},{"_id":0,"user_id":0}).to_list()
     current_user.update({"blogs":blogs})
     current_user.pop("_id")
-    print(current_user)
     return {"data":current_user}
