@@ -1,0 +1,5 @@
+passlib[bcrypt]
+fastapi[standard]
+PyJWT
+motor
+python-slugify
