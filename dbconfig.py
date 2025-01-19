@@ -1,8 +1,13 @@
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
+import os
+
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+
+# MONGO_URI = "mongodb://localhost:27017"
 
 try:
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    client = AsyncIOMotorClient(MONGO_URI)
     db = client.blog
 except Exception:
     raise HTTPException(status_code=500,detail="Database Connection Error")
