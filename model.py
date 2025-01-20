@@ -37,7 +37,7 @@ class BlogData(BaseModel):
     author : str
     created_at: datetime
     updated_at: datetime
-    full_name: str
+    author: str
 
 class BlogUpdate(BaseModel):
     title: Optional[str] = None

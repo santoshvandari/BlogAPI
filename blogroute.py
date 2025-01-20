@@ -23,10 +23,17 @@ async def create_blog(blogdata: BlogPost,db:AsyncIOMotorDatabase=Depends(get_db)
     return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Blog Creation Failed")
 
 
-@blogroute.get("/all")
-async def get_all_blogs(current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
-    blogs = await db["blogs"].find({"user_id":current_user["_id"]},{"_id":0,"user_id":0}).to_list()
+@blogroute.get("/all",response_model=list[BlogData])
+async def get_all_blogs(db:AsyncIOMotorDatabase=Depends(get_db)):
+    blogs = await db["blogs"].find({},{"_id":0,"user_id":0}).to_list()
     return blogs
+
+@blogroute.get("/{slug}",response_model=BlogData)
+async def get_blog(slug:str,db:AsyncIOMotorDatabase=Depends(get_db)):
+    blog = await db["blogs"].find_one({"slug":slug},{"_id":0,"user_id":0})
+    if blog:
+        return blog
+    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Blog Not Found")
 
 @blogroute.patch("/update/{slug}")
 async def update_blog(slug:str,blogdata:BlogUpdate,db:AsyncIOMotorDatabase=Depends(get_db),current_user:UserData=Depends(get_current_user)):
