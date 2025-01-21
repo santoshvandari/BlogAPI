@@ -52,9 +52,9 @@ async def change_password(password:PasswordUpdate,current_user:UserData=Depends(
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="No Password Provided")
     
     if password.updatedpw != password.confirmpwd:
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Password Mismatch")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Password Confirm Mismatch")
     
-    userauth = authenticate_user(current_user["username"],password.currentpwd,db)
+    userauth = await authenticate_user(current_user["username"],password.currentpwd,db)
     if not userauth:
         return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid Existing Password")
     hashedpw = get_password_hash(password.updatedpw)
