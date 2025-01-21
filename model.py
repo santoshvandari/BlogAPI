@@ -22,6 +22,11 @@ class UserData(BaseModel):
 class UserCreate(UserData):
     password: str
 
+class UserUpdate(BaseModel):
+    fullname: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[str] = None
+
 
 class BlogPost(BaseModel):
     title: str

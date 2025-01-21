@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordRequestForm
 from dbconfig import get_db
-from model import Token,UserData,UserCreate
+from model import Token,UserData,UserCreate, UserUpdate
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from utility import authenticate_user,create_access_token,create_user, get_current_user
 
@@ -33,3 +33,15 @@ async def read_users_me(current_user:UserData=Depends(get_current_user),db:Async
     current_user.update({"blogs":blogs})
     current_user.pop("_id")
     return {"data":current_user}
+
+@auth.post("/users/update")
+async def update_user(user:UserUpdate,current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
+    # remove unset or empty data 
+    user = user.dict(exclude_unset=True)
+    if not user:
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="No Data to Update")
+    id = current_user["_id"]
+    res = await db["users"].update_one({"_id":id},{"$set":user})
+    if res.modified_count:
+        return {"message":"User Updated Successfully"}
+    return {"message":"User Not Updated"}
