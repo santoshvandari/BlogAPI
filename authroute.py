@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordRequestForm
 from dbconfig import get_db
-from model import Token,UserData,UserCreate, UserUpdate
+from model import PasswordUpdate, Token,UserData,UserCreate, UserUpdate
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from utility import authenticate_user,create_access_token,create_user, get_current_user
-
+from utility import authenticate_user,create_access_token,create_user, get_current_user,get_password_hash
 
 
 auth = APIRouter(prefix="/auth",tags=["Authentication"])
@@ -34,7 +33,7 @@ async def read_users_me(current_user:UserData=Depends(get_current_user),db:Async
     current_user.pop("_id")
     return {"data":current_user}
 
-@auth.post("/users/update")
+@auth.put("/users/update")
 async def update_user(user:UserUpdate,current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
     # remove unset or empty data 
     user = user.dict(exclude_unset=True)
@@ -45,3 +44,22 @@ async def update_user(user:UserUpdate,current_user:UserData=Depends(get_current_
     if res.modified_count:
         return {"message":"User Updated Successfully"}
     return {"message":"User Not Updated"}
+
+@auth.put("/users/changepassword")
+async def change_password(password:PasswordUpdate,current_user:UserData=Depends(get_current_user),db:AsyncIOMotorDatabase=Depends(get_db)):
+    id = current_user["_id"]
+    if not password:
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="No Password Provided")
+    
+    if password.updatedpw != password.confirmpwd:
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Password Mismatch")
+    
+    userauth = authenticate_user(current_user["username"],password.currentpwd,db)
+    if not userauth:
+        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid Existing Password")
+    hashedpw = get_password_hash(password.updatedpw)
+
+    res = await db["users"].update_one({"_id":id},{"$set":{"password":hashedpw}})
+    if res.modified_count:
+        return {"message":"Password Changed Successfully"}
+    return {"message":"Password Not Changed"}

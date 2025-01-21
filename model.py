@@ -27,6 +27,11 @@ class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[str] = None
 
+class PasswordUpdate(BaseModel):
+    currentpwd: str
+    updatedpw: str
+    confirmpwd: str
+
 
 class BlogPost(BaseModel):
     title: str
