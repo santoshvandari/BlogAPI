@@ -24,8 +24,11 @@ BlogAPI is a web application built with FastAPI that provides a RESTful API for 
 - **User Registration**: `POST /auth/register`
 - **User Token**: `POST /auth/token`
 - **User Details**: `GET /auth/users/me`
+- **User Update**: `PUT /auth/users/update`
+- **Password Update**: `PUT /auth/users/changepassword`
 - **Create Blog**: `POST /blog/create`
 - **Get All Blogs**: `GET /blog/all`
+- **Get Blog By Slug**: `GET /blog/{slug}`
 - **Update Blog**: `PATCH /blog/{slug}`
 - **Delete Blog**: `DELETE /blog/{slug}`
 
